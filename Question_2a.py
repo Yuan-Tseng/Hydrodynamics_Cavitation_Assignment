@@ -17,11 +17,11 @@ m = (beta / (rho0 * c0)) * Pa           # non dimensionalized m by mutiplying Pa
 d = delta / 2                           # non dimensionalized diffusivity
 
 # Space and Time
-timespan = [0, 0.1]                             # total time span [s]
-timestep = np.linspace(0, timespan[1], 500)     # descretized time range from 0-0.1s
-NX = 512                                        # number of spatial points  
-X = np.linspace(0, 2*Lambda, NX, endpoint=False)# spatial domain from 0 to lambda
-dX = X[1] - X[0]                                # spatial step size
+timespan = [0, 0.1]                                 # total time span [s]
+timestep = np.linspace(0, timespan[1], 500)         # descretized time range from 0-0.1s
+NX = 512                                            # number of spatial points  
+X = np.linspace(0, Lambda, NX, endpoint=False)      # spatial domain from 0 to lambda
+dX = X[1] - X[0]                                    # spatial step size
 
 # Initial Condition
 S0 = np.sin(k0 * X)
@@ -68,12 +68,12 @@ if __name__ == "__main__":
         S_profile = sol.y[:, idx]
 
         ax = axes[i]
-        ax.plot(X, S_profile, color='b')
-        ax.set_ylabel("S = p / pₐ")
+        ax.plot(X / Lambda, S_profile, color='b')
+        ax.set_ylabel("S")
         ax.set_title(f"Time = {t:.4f} s")
         ax.grid(True)
 
-    axes[-1].set_xlabel("x [m]")  # Only set xlabel for the last subplot
+    axes[-1].set_xlabel("x / λ", fontsize=11) 
     plt.tight_layout()
     plt.show()
 
