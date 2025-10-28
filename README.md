@@ -1,4 +1,4 @@
-# Hydrodynamics_Cavitation_Assignment
+# Hydrodynamics and Cavitation Numerical Assignment
 
 This report is part of the numerical assignment for the Hydrodynamics and Cavitation (151-0125-00L) course. The assignment
 consists of three distinct problems, each addressing a classical hydrodynamics instability or nonlinear flow structure: the
