@@ -1,14 +1,30 @@
 import numpy as np
 import scipy.integrate as spi
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
+# Physical Parameters
 f0 = 1E6        # frequency
 Pa = 100E3      # pressure Amplitude (Reference)
-density = 1000  # water density [kg*m^-3]
+rho0 = 1000     # water density [kg*m^-3]
 c0 = 1500       # speed of sound in water [m/s]
 beta = 3.5      # non-linearity coefficient
 delta = 4.3E-6  # sound diffusivity
-timestep = np.linspace(0, 0.1, 500)     # descretized time range from 0-0.1s
+
+# Derived Parameters
+Lambda = c0 / f0                        # wave length [m]
+k0 = 2 * np.pi / Lambda                 # wavenumber
+m = (beta / (rho0 * c0)) * Pa           # non dimensionalized m by mutiplying Pa
+d = delta / 2                           # non dimensionalized diffusivity
+
+# Space and Time
+timespan = [0, 0.1]                             # total time span [s]
+timestep = np.linspace(0, timespan[1], 500)     # descretized time range from 0-0.1s
+NX = 512                                        # number of spatial points  
+X = np.linspace(0, 2*Lambda, NX, endpoint=False)# spatial domain from 0 to lambda
+dX = X[1] - X[0]                                # spatial step size
+
+# Initial Condition
+S0 = np.sin(k0 * X)
 
 def BurgersEquation(t, S, X, m, d):
     '''Input in spatial, solved in spectral, transform again to spatial as output'''
@@ -34,6 +50,31 @@ def BurgersEquation(t, S, X, m, d):
     S_t = S_t.real
     return S_t
 
-if __name__ == "main":
-    print("Super")
+def rhs(t, S):
+    return BurgersEquation(t, S, X, m, d)
+
+if __name__ == "__main__":
+    sol = spi.solve_ivp(rhs, 
+                  timespan, 
+                  S0, 
+                  t_eval = timestep, 
+                  method='BDF')
+    # print(sol)
+    indices = [0, 5, 8, 20, 499]  # Different time spot
+    fig, axes = plt.subplots(len(indices), 1, figsize=(8, 8), sharex=True)
+
+    for i, idx in enumerate(indices):
+        t = sol.t[idx]
+        S_profile = sol.y[:, idx]
+
+        ax = axes[i]
+        ax.plot(X, S_profile, color='b')
+        ax.set_ylabel("S = p / pₐ")
+        ax.set_title(f"Time = {t:.4f} s")
+        ax.grid(True)
+
+    axes[-1].set_xlabel("x [m]")  # Only set xlabel for the last subplot
+    plt.tight_layout()
+    plt.show()
+
 
