@@ -123,7 +123,7 @@ if __name__ == "__main__":
 
     plt.xlabel("Frequency [MHz]")
     plt.ylabel("Shock Formation Distance [m]")
-    plt.title("Shock Distance vs Frequency at Different Pa")
+    # plt.title("Shock Distance vs Frequency at Different Pa")
     plt.grid(True)
     plt.legend(title="Pressure Amplitude")
     plt.tight_layout()
