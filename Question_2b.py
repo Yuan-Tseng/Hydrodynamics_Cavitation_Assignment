@@ -60,7 +60,7 @@ if __name__ == "__main__":
                   t_eval = timestep, 
                   method='BDF')
     Amplitude = np.max(np.abs(sol.y * Pa/1000), axis=0)
-    Gradient = np.max(np.abs(np.gradient(sol.y * Pa, dX, axis=0)), axis=0)
+    Gradient = np.max(np.abs(np.gradient(sol.y * Pa/1000, dX, axis=0)), axis=0)
     t_all = sol.t*1000
     Max_grad = np.max(Gradient)
     Max_grad_idx = np.argmax(Gradient)
@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     # Subplot 2: Gradient vs Time
     axes[1].plot(t_all, Gradient, color='darkorange')
-    axes[1].set_ylabel("max |∂p/∂x| [Pa/m]")
+    axes[1].set_ylabel("max |∂p/∂x| [kPa/m]")
     axes[1].set_xlabel("Time [ms] (log scale)")
     # axes[1].set_title("Maximum Pressure Gradient vs Time")
     axes[1].grid(True, which='both', linestyle='--', alpha=0.6)
@@ -90,9 +90,11 @@ if __name__ == "__main__":
                 fontsize=9, va='top', ha='left',
                 bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="gray", alpha=0.8))
 
-    # Set log scale on time axis
+    # Set log scale on both axes
     axes[0].set_xscale('log')
     axes[1].set_xscale('log')
+    axes[0].set_yscale('log')
+    axes[1].set_yscale('log')
 
     plt.tight_layout()
     plt.show()

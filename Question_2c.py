@@ -18,7 +18,7 @@ d = delta / 2                           # non dimensionalized diffusivity
 
 # Space and Time
 timespan = [0, 0.1]                                 # total time span [s]
-timestep = np.linspace(0, timespan[1], 2500)        # descretized time range from 0-0.1s
+timestep = np.linspace(0, timespan[1], 1800)        # descretized time range from 0-0.1s
 NX = 512                                            # number of spatial points  
 X = np.linspace(0, Lambda, NX, endpoint=False)      # spatial domain from 0 to lambda
 dX = X[1] - X[0]                                    # spatial step size
@@ -59,7 +59,7 @@ def lossless_prop_x():
 def prop_x(Max_grad_time):
     return Max_grad_time * c0
 
-def max_grad_time(gradient):
+def max_grad_time(gradient, t_all):
     Max_grad_idx = np.argmax(gradient)
     Max_grad_time = t_all[Max_grad_idx]
     return Max_grad_time
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     Gradient = np.max(np.abs(np.gradient(sol.y * Pa, dX, axis=0)), axis=0)
     t_all = sol.t
     Max_grad = np.max(Gradient)
-    Max_grad_time = max_grad_time(Gradient)
+    Max_grad_time = max_grad_time(Gradient, t_all)
 
     print(lossless_prop_x)
     print(prop_x(Max_grad_time))
@@ -110,7 +110,7 @@ if __name__ == "__main__":
                                 method='BDF')
             
             Gradient = np.max(np.abs(np.gradient(sol.y * p, dX, axis=0)), axis=0)
-            shock_distance = prop_x(max_grad_time(Gradient))
+            shock_distance = prop_x(max_grad_time(Gradient, sol.t))
             shock_distance_matrix[i, j] = shock_distance
 
     # Plot shock distance vs frequency for each Pa
