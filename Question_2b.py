@@ -18,7 +18,7 @@ d = delta / 2                           # non dimensionalized diffusivity
 
 # Space and Time
 timespan = [0, 0.1]                                 # total time span [s]
-timestep = np.linspace(0, timespan[1], 500)         # descretized time range from 0-0.1s
+timestep = np.linspace(0, timespan[1], 2500)        # descretized time range from 0-0.1s
 NX = 512                                            # number of spatial points  
 X = np.linspace(0, Lambda, NX, endpoint=False)      # spatial domain from 0 to lambda
 dX = X[1] - X[0]                                    # spatial step size
@@ -53,28 +53,54 @@ def BurgersEquation(t, S, X, m, d):
 def rhs(t, S):
     return BurgersEquation(t, S, X, m, d)
 
+def pressure_amplitude(S):
+    pressure_profile = S*Pa
+    amplitude = np.max(np.abs(pressure_profile))
+    return amplitude
+
+def pressure_gradient(S):
+    pressure_gradient = np.gradient(S)
+
 if __name__ == "__main__":
     sol = spi.solve_ivp(rhs, 
                   timespan, 
                   S0, 
                   t_eval = timestep, 
                   method='BDF')
-    # print(sol)
-    indices = [0, 5, 8, 20, 499]  # Different time spot
-    fig, axes = plt.subplots(len(indices), 1, figsize=(8, 8), sharex=True)
+    Amplitude = np.max(np.abs(sol.y * Pa/1000), axis=0)
+    Gradient = np.max(np.abs(np.gradient(sol.y * Pa, dX, axis=0)), axis=0)
+    t_all = sol.t*1000
+    Max_grad = np.max(Gradient)
+    Max_grad_idx = np.argmax(Gradient)
+    Max_grad_time = t_all[Max_grad_idx]
 
-    for i, idx in enumerate(indices):
-        t = sol.t[idx]
-        S_profile = sol.y[:, idx]
+    # === Plot Amplitude and Gradient in subplots ===
+    fig, axes = plt.subplots(2, 1, figsize=(9, 6), sharex=True)
 
-        ax = axes[i]
-        ax.plot(X / Lambda, S_profile, color='b')
-        ax.set_ylabel("S")
-        ax.set_title(f"Time = {t:.4f} s")
-        ax.grid(True)
+    # Subplot 1: Amplitude vs Time
+    axes[0].plot(t_all, Amplitude, color='purple')
+    axes[0].set_ylabel("max |p(x, t)| [kPa]")
+    axes[0].set_title("Maximum Pressure Amplitude vs Time")
+    axes[0].grid(True, which='both', linestyle='--', alpha=0.6)
 
-    axes[-1].set_xlabel("x / λ", fontsize=11) 
+    # Subplot 2: Gradient vs Time
+    axes[1].plot(t_all, Gradient, color='darkorange')
+    axes[1].set_ylabel("max |∂p/∂x| [Pa/m]")
+    axes[1].set_xlabel("Time [ms] (log scale)")
+    axes[1].set_title("Maximum Pressure Gradient vs Time")
+    axes[1].grid(True, which='both', linestyle='--', alpha=0.6)
+    axes[1].axvline(Max_grad_time, color='gray', linestyle='--', linewidth=1)
+
+    # Annotate maximum gradient point
+    label_text = f"t = {Max_grad_time:.3f} ms"
+    axes[1].text(Max_grad_time, Max_grad * 0.9,
+                label_text, rotation=90, color='black',
+                fontsize=9, va='top', ha='left',
+                bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="gray", alpha=0.8))
+
+    # Set log scale on time axis
+    axes[0].set_xscale('log')
+    axes[1].set_xscale('log')
+
     plt.tight_layout()
     plt.show()
-
-
