@@ -60,7 +60,7 @@ if __name__ == "__main__":
                   t_eval = timestep, 
                   method='BDF')
     # print(sol)
-    indices = [0, 10, 16, 40, 999]  # Different time spot
+    indices = [0, 8, 16, 50, 500]  # Different time spot
     fig, axes = plt.subplots(len(indices), 1, figsize=(8, 8), sharex=True)
 
     for i, idx in enumerate(indices):
@@ -70,7 +70,7 @@ if __name__ == "__main__":
         ax = axes[i]
         ax.plot(X / Lambda, S_profile, color='b')
         ax.set_ylabel("S")
-        ax.set_title(f"Time = {t:.2f} ms")
+        ax.set_title(f"Time = {t:.1f} ms")
         ax.grid(True)
 
     axes[-1].set_xlabel("x / λ", fontsize=11) 
