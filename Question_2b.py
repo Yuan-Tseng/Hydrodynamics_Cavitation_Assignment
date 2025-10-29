@@ -53,14 +53,6 @@ def BurgersEquation(t, S, X, m, d):
 def rhs(t, S):
     return BurgersEquation(t, S, X, m, d)
 
-def pressure_amplitude(S):
-    pressure_profile = S*Pa
-    amplitude = np.max(np.abs(pressure_profile))
-    return amplitude
-
-def pressure_gradient(S):
-    pressure_gradient = np.gradient(S)
-
 if __name__ == "__main__":
     sol = spi.solve_ivp(rhs, 
                   timespan, 
@@ -80,14 +72,14 @@ if __name__ == "__main__":
     # Subplot 1: Amplitude vs Time
     axes[0].plot(t_all, Amplitude, color='purple')
     axes[0].set_ylabel("max |p(x, t)| [kPa]")
-    axes[0].set_title("Maximum Pressure Amplitude vs Time")
+    # axes[0].set_title("Maximum Pressure Amplitude vs Time")
     axes[0].grid(True, which='both', linestyle='--', alpha=0.6)
 
     # Subplot 2: Gradient vs Time
     axes[1].plot(t_all, Gradient, color='darkorange')
     axes[1].set_ylabel("max |∂p/∂x| [Pa/m]")
     axes[1].set_xlabel("Time [ms] (log scale)")
-    axes[1].set_title("Maximum Pressure Gradient vs Time")
+    # axes[1].set_title("Maximum Pressure Gradient vs Time")
     axes[1].grid(True, which='both', linestyle='--', alpha=0.6)
     axes[1].axvline(Max_grad_time, color='gray', linestyle='--', linewidth=1)
 
